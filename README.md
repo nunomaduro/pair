@@ -1,7 +1,7 @@
 > This project is a work in progress, some of the features may not be fully implemented yet, and the API may change in future releases.
 
 <p align="center">
-    <img src="https://raw.githubusercontent.com/nunomaduro/pair/main/docs/example.png" height="300" alt="Skeleton Php">
+    <img src="https://raw.githubusercontent.com/nunomaduro/pair/main/docs/logo.png" height="300" alt="Pair Logo">
     <p align="center">
         <a href="https://github.com/nunomaduro/pair/actions"><img alt="GitHub Workflow Status (main)" src="https://github.com/nunomaduro/pair/actions/workflows/tests.yml/badge.svg"></a>
         <a href="https://packagist.org/packages/nunomaduro/pair"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/nunomaduro/pair"></a>
