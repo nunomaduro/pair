@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-use Pair\Support\Filesystem;
+use Symfony\Component\Filesystem\Filesystem;
 
 pest()->beforeEach(function (): void {
-    Filesystem::remove(
+    $filesystem = new Filesystem;
+    $filesystem->remove(
         dirname(__DIR__, 2).'/Playground/.ai',
     );
 });
