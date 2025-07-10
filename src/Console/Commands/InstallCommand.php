@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Pair\Console\Commands;
 
 use Pair\AgentManager;
-use Pair\Support\Filesystem;
 use Pair\Support\Project;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
 
 use function Termwind\render;
 use function Termwind\renderUsing;
@@ -69,15 +70,16 @@ final class InstallCommand extends Command
             return;
         }
 
-        if (file_exists($aiFolder)) {
-            Filesystem::truncateDirectory($aiFolder);
+        $filesystem = new Filesystem;
+        if ($filesystem->exists($aiFolder)) {
+            $filesystem->remove($aiFolder);
         } else {
-            Filesystem::createDirectory($aiFolder);
+            $filesystem->mkdir($aiFolder);
         }
 
         $defaultFolder = dirname(__DIR__, 3).'/defaults';
 
-        Filesystem::copyDirectoryFiles($defaultFolder, $aiFolder);
+        $filesystem->copy($defaultFolder, $aiFolder);
     }
 
     /**
@@ -86,12 +88,15 @@ final class InstallCommand extends Command
     private function ensureAgentsFoldersAreIgnored(string $path): void
     {
         $gitignorePath = $path.'/.gitignore';
+        $filesystem = new Filesystem;
 
-        if (! file_exists($gitignorePath)) {
+        if (! $filesystem->exists($gitignorePath)) {
             return;
         }
 
-        if (($gitignoreContent = file_get_contents($gitignorePath)) === false) {
+        try {
+            $gitignoreContent = $filesystem->readFile($gitignorePath);
+        } catch (IOException) {
             return;
         }
 
@@ -105,6 +110,6 @@ final class InstallCommand extends Command
             $gitignoreContent .= "{$baseFolder}\n";
         }
 
-        file_put_contents($gitignorePath, $gitignoreContent);
+        $filesystem->dumpFile($gitignorePath, $gitignoreContent);
     }
 }
