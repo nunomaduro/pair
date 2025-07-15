@@ -5,7 +5,8 @@
             "php",
             "junie",
             "filesystem",
-            "gitignore"
+            "gitignore",
+            "kiro"
         ],
         "paths": []
     }

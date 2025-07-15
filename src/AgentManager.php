@@ -7,6 +7,7 @@ namespace Pair;
 use Pair\Agents\Cline;
 use Pair\Agents\Cursor;
 use Pair\Agents\Junie;
+use Pair\Agents\Kiro;
 use Pair\Agents\Windsurf;
 use Pair\Contracts\Agent;
 
@@ -26,6 +27,7 @@ final readonly class AgentManager
             Windsurf::class,
             Junie::class,
             Cline::class,
+            Kiro::class,
         ]
     ) {
         //
