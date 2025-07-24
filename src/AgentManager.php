@@ -45,4 +45,43 @@ final readonly class AgentManager
             $this->agents
         );
     }
+
+    /**
+     * Returns agents filtered by the given names.
+     *
+     * @param  array<int,string>  $agentNames
+     * @return array<int,Agent>
+     */
+    public function only(array $agentNames): array
+    {
+        if (empty($agentNames)) {
+            return $this->all();
+        }
+
+        $normalizedNames = array_map('strtolower', $agentNames);
+        $filteredAgents = [];
+
+        foreach ($this->agents as $agentClass) {
+            $agentName = strtolower(basename(str_replace('\\', '/', $agentClass)));
+
+            if (in_array($agentName, $normalizedNames, true)) {
+                $filteredAgents[] = new $agentClass;
+            }
+        }
+
+        return $filteredAgents;
+    }
+
+    /**
+     * Returns the available agent names.
+     *
+     * @return array<int,string>
+     */
+    public function getAvailableAgentNames(): array
+    {
+        return array_map(
+            static fn (string $agentClass): string => strtolower(basename(str_replace('\\', '/', $agentClass))),
+            $this->agents
+        );
+    }
 }
