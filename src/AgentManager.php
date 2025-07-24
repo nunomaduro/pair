@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pair;
 
 use Pair\Agents\Cline;
+use Pair\Agents\Copilot;
 use Pair\Agents\Cursor;
 use Pair\Agents\Junie;
 use Pair\Agents\Windsurf;
@@ -26,6 +27,7 @@ final readonly class AgentManager
             Windsurf::class,
             Junie::class,
             Cline::class,
+            Copilot::class,
         ]
     ) {
         //
@@ -40,6 +42,45 @@ final readonly class AgentManager
     {
         return array_map(
             static fn (string $agentClass): Agent => new $agentClass,
+            $this->agents
+        );
+    }
+
+    /**
+     * Returns agents filtered by the given names.
+     *
+     * @param  array<int,string>  $agentNames
+     * @return array<int,Agent>
+     */
+    public function only(array $agentNames): array
+    {
+        if (empty($agentNames)) {
+            return $this->all();
+        }
+
+        $normalizedNames = array_map('strtolower', $agentNames);
+        $filteredAgents = [];
+
+        foreach ($this->agents as $agentClass) {
+            $agentName = strtolower(basename(str_replace('\\', '/', $agentClass)));
+
+            if (in_array($agentName, $normalizedNames, true)) {
+                $filteredAgents[] = new $agentClass;
+            }
+        }
+
+        return $filteredAgents;
+    }
+
+    /**
+     * Returns the available agent names.
+     *
+     * @return array<int,string>
+     */
+    public function getAvailableAgentNames(): array
+    {
+        return array_map(
+            static fn (string $agentClass): string => strtolower(basename(str_replace('\\', '/', $agentClass))),
             $this->agents
         );
     }

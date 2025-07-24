@@ -31,7 +31,7 @@ final class SyncCommand extends Command
         /** @var string $path */
         $path = $input->getOption('path') ?: Project::fromEnv()->path();
 
-        $this->ensureAgentsRulesAreSynced($path);
+        $this->ensureAgentsRulesAreSynced($input, $path);
 
         return Command::SUCCESS;
     }
@@ -43,17 +43,30 @@ final class SyncCommand extends Command
     {
         $this
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'The path to the project')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force the installation, overwriting existing files');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force the installation, overwriting existing files')
+            ->addOption('agents', 'a', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Target specific agents (e.g., cursor, junie, copilot)');
     }
 
     /**
      * Ensures that the agents rules are synced in the specified path.
      */
-    private function ensureAgentsRulesAreSynced(string $path): void
+    private function ensureAgentsRulesAreSynced(InputInterface $input, string $path): void
     {
         $agentManager = new AgentManager;
 
-        foreach ($agentManager->all() as $agent) {
+        /** @var array<int,string> $targetAgents */
+        $targetAgents = $input->getOption('agents') ?? [];
+
+        $agents = empty($targetAgents) ? $agentManager->all() : $agentManager->only($targetAgents);
+
+        if (empty($agents) && !empty($targetAgents)) {
+            $availableAgents = implode(', ', $agentManager->getAvailableAgentNames());
+            throw new \InvalidArgumentException(
+                "No valid agents found. Available agents: {$availableAgents}"
+            );
+        }
+
+        foreach ($agents as $agent) {
             RulesGenerator::generate($agent, $path);
         }
     }

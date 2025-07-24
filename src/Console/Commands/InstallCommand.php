@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pair\Console\Commands;
 
 use Pair\AgentManager;
+use Pair\Agents\Copilot;
 use Pair\Support\Filesystem;
 use Pair\Support\Project;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -33,7 +34,7 @@ final class InstallCommand extends Command
         $path = $input->getOption('path') ?: Project::fromEnv()->path();
 
         $this->ensureAiFolderExists($input, $path);
-        $this->ensureAgentsFoldersAreIgnored($path);
+        $this->ensureAgentsFoldersAreIgnored($input, $path);
 
         return Command::SUCCESS;
     }
@@ -45,7 +46,8 @@ final class InstallCommand extends Command
     {
         $this
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'The path to the project')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force the installation, overwriting existing files');
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force the installation, overwriting existing files')
+            ->addOption('agents', 'a', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Target specific agents (e.g., cursor, junie, copilot)');
     }
 
     /**
@@ -83,7 +85,7 @@ final class InstallCommand extends Command
     /**
      * Ensures that `.junie`, `.cursor`, etc, folders are ignored in the `.gitignore` file.
      */
-    private function ensureAgentsFoldersAreIgnored(string $path): void
+    private function ensureAgentsFoldersAreIgnored(InputInterface $input, string $path): void
     {
         $gitignorePath = $path.'/.gitignore';
 
@@ -95,7 +97,14 @@ final class InstallCommand extends Command
             return;
         }
 
-        foreach ((new AgentManager)->all() as $agent) {
+        $agentManager = new AgentManager;
+
+        /** @var array<int,string> $targetAgents */
+        $targetAgents = $input->getOption('agents') ?? [];
+
+        $agents = empty($targetAgents) ? $agentManager->all() : $agentManager->only($targetAgents);
+
+        foreach ($agents as $agent) {
             $baseFolder = $agent->baseFolder();
 
             if (str_contains($gitignoreContent, $baseFolder)) {

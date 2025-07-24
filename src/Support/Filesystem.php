@@ -65,4 +65,14 @@ final readonly class Filesystem
             }
         }
     }
+
+    public static function copyDirectoryFilesForAgent(string $from, string $to, \Pair\Contracts\Agent $agent): void
+    {
+        foreach (glob($from.'/*') ?: [] as $file) {
+            if (is_file($file)) {
+                $targetFilename = $agent->getTargetFilename($file);
+                copy($file, $to.'/'.$targetFilename);
+            }
+        }
+    }
 }

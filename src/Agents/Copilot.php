@@ -9,14 +9,14 @@ use Pair\Contracts\Agent;
 /**
  * @internal
  */
-final class Windsurf implements Agent
+final class Copilot implements Agent
 {
     /**
      * Returns the base folder for the agent.
      */
     public function baseFolder(): string
     {
-        return '.windsurfrules';
+        return '.copilot';
     }
 
     /**
@@ -24,7 +24,7 @@ final class Windsurf implements Agent
      */
     public function fileExtension(): string
     {
-        return 'mdc';
+        return 'md';
     }
 
     /**
