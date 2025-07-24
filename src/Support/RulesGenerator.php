@@ -22,8 +22,10 @@ final readonly class RulesGenerator
 
         mkdir($base, 0755, true);
 
+        $aiDir = $path.'/.ai';
         $defaultsDir = dirname(__DIR__, 2).'/defaults';
+        $sourceDir = is_dir($aiDir) && !empty(glob($aiDir.'/*')) ? $aiDir : $defaultsDir;
 
-        Filesystem::copyDirectoryFiles($defaultsDir, $base);
+        Filesystem::copyDirectoryFilesForAgent($sourceDir, $base, $agent);
     }
 }
