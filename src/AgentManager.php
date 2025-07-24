@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pair;
 
 use Pair\Agents\Cline;
+use Pair\Agents\Copilot;
 use Pair\Agents\Cursor;
 use Pair\Agents\Junie;
 use Pair\Agents\Windsurf;
@@ -26,6 +27,7 @@ final readonly class AgentManager
             Windsurf::class,
             Junie::class,
             Cline::class,
+            Copilot::class,
         ]
     ) {
         //

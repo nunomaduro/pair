@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pair\Console\Commands;
 
 use Pair\AgentManager;
+use Pair\Agents\Copilot;
 use Pair\Support\Filesystem;
 use Pair\Support\Project;
 use Symfony\Component\Console\Attribute\AsCommand;
